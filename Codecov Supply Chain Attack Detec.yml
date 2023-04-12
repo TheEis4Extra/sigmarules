@@ -1,0 +1,25 @@
+title: Codecov Supply Chain Attack Detection
+description: Detects when a container attempts to connect to unauthorized IP addresses
+references:
+    - https://securityboulevard.com/2021/04/codecov-supply-chain-attack-how-it-happened-and-what-to-do-next/
+author: Eric Thomas @TheEis4Extra
+date: 04/11/2023
+status: experimental
+logsource:
+    category: kubernetes
+    container: *
+detection:
+    selection:
+        container.image.name: "codecov/bash-uploader:*"
+        container.command: ["bash", "/uploader.sh"]
+        protoPayload.requestMetadata.sourceIp: "!10.0.0.0/8"
+    condition: selection
+falsepositives:
+    - Legitimate network connections from authorized sources
+    - Changes made by authorized personnel
+level: high
+tags:
+    - kubernetes
+    - containerlogs
+    - detectionrules
+    - threatdetection
